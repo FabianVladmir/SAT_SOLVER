@@ -18,6 +18,9 @@ void print_clauses(vector<set<int>>&clauses){
     return;
 }
 
+
+
+
 //print literals answer
 void print_assignmnet(vector<int> &assignment){
     for(int i=0;i<assignment.size();i++)
@@ -133,7 +136,7 @@ bool DPLL_algo(vector<set<int>>clauses,vector<int> assignment,int new_p, int lit
     unit_prop(clauses,assignment);
     pure_literal_assign(clauses,assignment,literals);
     if(clauses.size()==0){
-        print_ans(assignment,literals);
+        // print_ans(assignment,literals);
         return true;
     }
     if(check_empty_clause(clauses)==1){
@@ -150,30 +153,32 @@ bool SAT_SOLVER(vector<set<int>> &clauses, int literals){
     unit_prop(clauses,assignment);
     pure_literal_assign(clauses,assignment,literals);
     if(clauses.size()==0){
-        print_ans(assignment,literals);
+        
         cout<<"SATISFIABLE"<<endl;
-        return 0;
+        answer = true;
+        return 1;
 
     }
     if(check_empty_clause(clauses)==1){
         cout<<"UNSATISFIABLE"<<endl;
+        answer= false;
         return 0;
     }
     int  new_p = *(clauses[0].begin());
     answer =  DPLL_algo(clauses, assignment,new_p, literals) || DPLL_algo(clauses,assignment,-1*new_p,literals);
     if(answer){
         cout<<"SATISFIABLE"<<endl;
-        return answer;}
+        return 1;}
         // print_clauses(clauses);
     else {  
         cout<<"UNSATISFIABLE"<<endl;
-        return answer;
+        return 0;
         }
 
 }
 
 
-void contraction(vector<set<int>>&clauses,vector<set<int>> &nclauses ){
+void contraction(vector<set<int>>&clauses,vector<set<int>> &nclauses,int literals ){
     int rows = clauses.size();
     // nclauses = clauses;
     // print_clauses(nclauses);
@@ -187,7 +192,7 @@ void contraction(vector<set<int>>&clauses,vector<set<int>> &nclauses ){
               if(*it == *j){
                 clauses[i].erase(clauses[i].find(temp));
                 cout << "some2\n";
-                bool check = SAT_SOLVER(clauses, i);
+                bool check = SAT_SOLVER(clauses, literals);
                 if(check_empty_clause(clauses))
                   cout<<"UNSATISFIABLE"<<endl;
                   
@@ -208,9 +213,11 @@ void add_claus(vector<set<int>> &clauses, int literals){
 
   clauses.resize(literals+1);
   literals++;
+  vector<int> curr_temp;
   for(int i = 0; i < literals; i++){
     int n;
-    while(cin >> n and literals !=0){
+    cin >> n;
+    while(literals !=0){
       clauses[i].insert(n);
     }
   }
@@ -219,23 +226,20 @@ void add_claus(vector<set<int>> &clauses, int literals){
 }
 
 
-void expansion(vector<set<int>>&clauses,vector<set<int>> &nclauses, int &literals){
+void expansion(vector<set<int>>&clauses, int &literals){
   
-  // int i=0;
-  for(auto it = nclauses[0].begin(); it != nclauses[0].end(); it++){
-
-    if(clauses[literals-1].empty()){
-      clauses[literals-1].insert(*it);
-    }
-    else{
-      clauses.resize(literals+1);
-      literals++;
-      clauses[literals-1].insert(*it);
-    }
-    // i++;
-
+  int rows = clauses.size();
+    
+    for(int i=0;i<rows;i++)
+    {
+      for (auto it=clauses[i].begin(); it != clauses[i].end(); ++it) 
+      {
+          cout<<*it<<" ";
+      }
+      cout<<endl;
   }
-
+    
+  return;
 }
 
 
@@ -255,28 +259,74 @@ int main()
         inFile>>v1;
     }    
 
+    vector<int> literlasss;
     int literals;
     int rows;
-    inFile>> literals;
+    inFile>>literals;
     inFile>>rows;
     cout<<"No of literals "<<literals<<endl;
     cout<<"No of rows (cnf) "<<rows<<endl;
     vector<set<int>> clauses(rows);
     int num;
-    for(int i=0;i<rows;i++)
+    int i=0;
+    for(;i<rows;i++)
     {
         inFile>>num;
         while(num!=0)
         {
+            //cout<<" entro " <<endl;
             clauses[i].insert(num);
             inFile>>num;
         }
     }
+    cout<< " valor i = "<< i <<endl;
+    cout<<" inicial vector ";
+    print_clauses(clauses);
+    cout<<endl;
 
-    inFile.close();
+    /* clauses[2].insert(5);
+    cout<<" final vector ";
+    print_clauses(clauses); */
+   // agregar 
+    // ifstream inFile2;
+    // string v2,v12;
+    // string name2;
+    // cout<<"Enter name of  new file: "<<endl;
+    // cin>>name;
+    // inFile.open(name);
+    // inFile>>v2;
+    // inFile>>v12;
+    // while(v2!="p" || v12!="cnf"){
+    //     v2=v12;
+    //     inFile>>v12;
+    // }    
+
+    // int literals2;
+    // int rows2;
+    // inFile>>literals2;
+    // inFile>>rows2;
+    // cout<<"No of literals "<<literals2<<endl;
+    // cout<<"No of rows (cnf) "<<rows2<<endl;
+    // vector<set<int>> clauses2(rows);
+    // int num2;
+    // int i2;
+    // for(int j=0;i2<rows2;i2++,j++)
+    // {
+    //     inFile2>>num2;
+    //     while(num2!=0)
+    //     {
+    //         //cout<<" entro " <<endl;
+    //         clauses[i2].insert(num2);
+    //         inFile2>>num2;
+    //     }
+    // }
+    
+    
+
+    // inFile.close();
 
 
-    ifstream inFile2;
+    /* ifstream inFile2;
     string v2,v3;
     string name2;
     cout << "Enter file name file name for second:\n";
@@ -303,19 +353,65 @@ int main()
         inFile2>>num2;
         while(num2!=0)
         {
+            
             nclauses[i].insert(num2);
             inFile2>>num2;
         }
+    } */
+
+    //inFile2.close();
+
+
+    // agregar 
+    ifstream inFile2;
+    string v2,v3;
+    string name2;
+    cout << "Enter file name file name for second:\n";
+    cin>>name2;
+    inFile2.open(name2);
+    inFile2>>v2;
+    inFile2>>v3;
+    while(v2!="p" || v3!="cnf"){
+        v2=v3;
+        inFile2>>v3;
+    }    
+
+    int literals2;
+    int rows2;
+    inFile2>> literals2;
+    inFile2>>rows2;
+    cout<<"No of literals "<<literals2<<endl;
+    cout<<"No of rows (cnf) "<<rows2<<endl;
+    clauses.resize(rows+rows2);
+    int newRows=rows2+rows;
+    int num2;
+    for(int j=i;j<rows2+i;j++){
+        inFile2>>num2;
+        while(num2!=0)
+        {
+            clauses[j].insert(num2);
+            inFile2>>num2;
+        }
+    }
+    cout<<" vector final\n ";
+    print_clauses(clauses);
+    if(SAT_SOLVER(clauses,literals))
+      cout << "lafe papu\n";
+    else{
+      cout <<"sera el fin del hombre araña :v ?\n";
     }
 
-    inFile2.close();
-    
-    contraction(clauses,nclauses);
+
+
+
+
+
+    // contraction(clauses,nclauses,literals);
 
     // expansion(clauses, nclauses, literals);
     // cout<<"No of literals "<<literals<<endl;
     // cout<<"No of rows (cnf) "<<rows<<endl;
-
+    //add_claus(clauses, literals);
     
     // vector<int> assignment;
     // //Algorithm
